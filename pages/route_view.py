@@ -1,23 +1,22 @@
-from utils.loader import load_data_safely
+import streamlit as st
+import pandas as pd
+import plotly.express as px
 
 def app(df):
+    st.title("🗺️ Route Overview")
 
-    path = "/content/drive/MyDrive/Etihad_CO2_Optimization/data/processed/final_dashboard_dataset.csv"
-    df = load_data_safely(path)
-    if df is None:
+    if df is None or df.empty:
         st.error("❌ Final dashboard dataset not loaded.")
         return
 
-    st.title("🗺️ Route Overview")
+    # Top 10 most frequent routes
+    df['Route'] = df['Origin'] + " → " + df['Destination']
+    route_counts = df['Route'].value_counts().reset_index()
+    route_counts.columns = ['Route', 'Flight_Count']
 
-    # ✅ Only show flights with valid lat/lon
-    if all(col in df.columns for col in ["Origin_Lat", "Origin_Lon"]):
-        st.map(df[["Origin_Lat", "Origin_Lon"]].dropna().rename(columns={
-            "Origin_Lat": "lat",
-            "Origin_Lon": "lon"
-        }).head(100))
-    else:
-        st.warning("⚠️ Latitude/Longitude data not available for mapping.")
+    st.subheader("📍 Top Routes by Frequency")
+    st.plotly_chart(
+        px.bar(route_counts.head(10), x='Route', y='Flight_Count', title='Top 10 Most Frequent Routes')
+    )
 
-    st.write("📍 Top routes (sample):")
-    st.dataframe(df[["Flight_ID", "Origin", "Destination"]].head(10))
+    st.dataframe(route_counts.head(20))  # Show a table too
