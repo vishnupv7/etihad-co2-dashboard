@@ -29,4 +29,5 @@ pages = {
     "✈️ Aircraft Efficiency": aircraft_view,
 }
 selection = st.sidebar.radio("Navigate", list(pages.keys()))
-pages[selection].app()
+pages[selection].app(df)  # ✅ Pass df to selected page
+
