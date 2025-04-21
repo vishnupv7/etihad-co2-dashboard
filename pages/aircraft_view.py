@@ -5,7 +5,8 @@ import pandas as pd
 import plotly.express as px
 import os
 
-def app():
+def app(df):
+:
     st.title("✈️ Aircraft Efficiency Overview")
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(ROOT_DIR, "../data/processed/etihad_aircraft_fuel.csv")
