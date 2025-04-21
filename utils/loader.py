@@ -1,17 +1,14 @@
-import os
 import pandas as pd
+import os
+import streamlit as st
 
-def load_data_safely(filepath, dtype_override=None):
-    """Safely load a CSV file and return a DataFrame or None if it fails."""
-    if not os.path.exists(filepath):
-        return None
+def load_data_safely(filename: str):
+    base_path = os.path.dirname(__file__)  # this points to /utils
+    file_path = os.path.join(base_path, "..", filename)
+    file_path = os.path.abspath(file_path)
 
     try:
-        if dtype_override:
-            df = pd.read_csv(filepath, dtype=dtype_override)
-        else:
-            df = pd.read_csv(filepath, low_memory=False)
-        return df
+        return pd.read_csv(file_path)
     except Exception as e:
-        print(f"Failed to load {filepath} — {e}")
-        return None
+        st.error("❌ Final dashboard dataset not loaded.")
+        st.stop()
