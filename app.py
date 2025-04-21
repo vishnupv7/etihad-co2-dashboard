@@ -13,34 +13,31 @@ from pages import (
     aircraft_view
 )
 
-# Load dataset (local CSV)
+# ✅ Auto-refresh every 60 seconds
+st_autorefresh(interval=60000, limit=None, key="dashboardrefresh")
+
+# ✅ Try to load real-time data if available
 @st.cache_data
-def load_local_data():
-    try:
-        csv_path = Path(__file__).parent / "final_dashboard_sample.csv"
-        df = pd.read_csv(csv_path)
-        return df
-    except Exception as e:
-        st.error(f"❌ Failed to load CSV: {e}")
-        return pd.DataFrame()
+def load_dashboard_data():
+    live_path = Path("data/live/final_dashboard_sample.csv")
+    fallback_path = Path("final_dashboard_sample.csv")
 
-# Load dataset into df
-df = load_local_data()
+    if live_path.exists():
+        df = pd.read_csv(live_path)
+        return df, "🟢 LIVE"
+    elif fallback_path.exists():
+        df = pd.read_csv(fallback_path)
+        return df, "⚪ OFFLINE"
+    else:
+        return pd.DataFrame(), "🔴 MISSING"
 
-# Sidebar for navigation and auto-refresh toggle
+# ✅ Load the data
+df, mode = load_dashboard_data()
+
+# ✅ Dashboard UI
 st.sidebar.title("🧭 Etihad CO₂ Optimization Dashboard")
+st.sidebar.markdown(f"**Data Mode:** {mode}")
 
-# Toggle to enable auto-refresh
-autorefresh_mode = st.sidebar.checkbox("🔁 Auto-Refresh Dashboard", value=True)
-
-# Auto-refresh functionality with manual override
-if autorefresh_mode:
-    count = st_autorefresh(interval=60000, key="auto_refresh")  # Refresh every 60 seconds
-    st.sidebar.success(f"Auto-refresh enabled. Refresh count: {count}")
-else:
-    st.sidebar.info("Auto-refresh is off. Manually refresh to update.")
-
-# Pages for navigation
 pages = {
     "🏠 Home": home,
     "🗺️ Route Overview": route_view,
@@ -51,6 +48,5 @@ pages = {
     "✈️ Aircraft Efficiency": aircraft_view,
 }
 
-# Page selection
 selection = st.sidebar.radio("Navigate", list(pages.keys()))
-pages[selection].app(df)  # Pass df to selected page
+pages[selection].app(df)
