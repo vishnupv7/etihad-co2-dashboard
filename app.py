@@ -1,49 +1,32 @@
+
 import streamlit as st
 import pandas as pd
-from pathlib import Path
 from streamlit_autorefresh import st_autorefresh
+from pathlib import Path
 
-from pages import (
-    home,
-    route_view,
-    ml_view,
-    esg_view,
-    deviation_view,
-    weather_view,
-    aircraft_view
-)
+st.set_page_config(page_title="Etihad CO₂ Live Dashboard", layout="wide")
+st_autorefresh(interval=60000, key="datarefresh")
 
-# ✅ Auto-refresh every 60s for live mode
-REFRESH_INTERVAL = 60 * 1000  # in milliseconds
-st_autorefresh(interval=REFRESH_INTERVAL, key="datarefresh")
+FALLBACK_PATH = Path(__file__).parent / "final_dashboard_sample.csv"
+LIVE_PATH = Path(__file__).parent / "data" / "live" / "live_combined.csv"
 
-# ✅ Sidebar toggle: Live or Offline
-st.sidebar.title("🧭 Etihad CO₂ Optimization Dashboard")
-use_live = st.sidebar.toggle("🔌 Enable Real-Time Mode", value=True)
+use_live = st.sidebar.toggle("🌐 Use Live Data", value=True)
 
-@st.cache_data(ttl=30)
-def load_data():
+@st.cache_data
+def load_data(live=True):
     try:
-        if use_live:
-            df = pd.read_csv("/content/drive/MyDrive/Etihad_CO2_Optimization/data/live/live_combined.csv")
-        else:
-            df = pd.read_csv(Path(__file__).parent / "final_dashboard_sample.csv")
+        path = LIVE_PATH if live else FALLBACK_PATH
+        df = pd.read_csv(path)
         return df
-    except Exception as e:
-        st.error(f"❌ Failed to load data: {e}")
+    except:
+        st.error("❌ Failed to load data.")
         return pd.DataFrame()
 
-df = load_data()
+df = load_data(use_live)
+st.success(f"📊 Loaded {'Live' if use_live else 'Fallback'} Data → {df.shape}")
+st.dataframe(df.head(10), use_container_width=True)
 
-# ✅ Navigation
-pages = {
-    "🏠 Home": home,
-    "🗺️ Route Overview": route_view,
-    "📉 ML Anomaly Detection": ml_view,
-    "🌱 ESG Alignment": esg_view,
-    "🔀 Deviation Insights": deviation_view,
-    "⛅ Weather Impact": weather_view,
-    "✈️ Aircraft Efficiency": aircraft_view,
-}
-selection = st.sidebar.radio("Navigate", list(pages.keys()))
-pages[selection].app(df)
+if use_live and not df.empty:
+    import plotly.express as px
+    st.plotly_chart(px.scatter(df, x="temp", y="wind", color="callsign",
+        title="Live Weather Impact per Etihad Flight"), use_container_width=True)
