@@ -14,7 +14,8 @@ from pages import (
 from utils.loader import load_data_safely
 
 # Load dataset (main)
-df = load_data_safely("final_dashboard_sample.csv")
+df = load_data_safely("https://drive.google.com/uc?id=1yh9ASDuVEa7ckNclK4s5pn6RfS1k8wMC")
+
 
 # Sidebar navigation
 st.sidebar.title("🧭 Etihad CO₂ Optimization Dashboard")
