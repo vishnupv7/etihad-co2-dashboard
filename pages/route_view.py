@@ -1,6 +1,7 @@
 from utils.loader import load_data_safely
 
-def app():
+def app(df):
+
     path = "/content/drive/MyDrive/Etihad_CO2_Optimization/data/processed/final_dashboard_dataset.csv"
     df = load_data_safely(path)
     if df is None:
