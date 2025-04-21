@@ -15,5 +15,5 @@ def app(df):
         st.error('❌ Failed to load data.')
         return
 
-    st.plotly_chart(px.scatter(df, x='Weather_Penalty_Index', y='Adjusted_Fuel_Burn_kg',
+    st.plotly_chart(px.scatter(df, x='Weather_Penalty_Index', y='Adjusted_Fuel_Burn_kg_kg',
                                title='Weather Penalty vs Adjusted Burn'))
