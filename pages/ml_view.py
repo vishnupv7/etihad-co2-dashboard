@@ -5,7 +5,8 @@ import pandas as pd
 import plotly.express as px
 import os
 
-def app():
+def app(df):
+
     st.title("🤖 ML Anomaly Detection")
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(ROOT_DIR, "../data/processed/etihad_ml_anomaly_flags.csv")
