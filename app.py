@@ -1,5 +1,6 @@
 import streamlit as st
-import os
+import pandas as pd
+from pathlib import Path
 
 from pages import (
     home,
@@ -11,11 +12,18 @@ from pages import (
     aircraft_view
 )
 
-from utils.loader import load_data_safely
+@st.cache_data
+def load_local_data():
+    try:
+        csv_path = Path(__file__).parent / "final_dashboard_sample.csv"
+        df = pd.read_csv(csv_path)
+        return df
+    except Exception as e:
+        st.error(f"❌ Failed to load CSV: {e}")
+        return pd.DataFrame()
 
-# Load dataset (main)
-df = load_data_safely("https://drive.google.com/uc?id=1yh9ASDuVEa7ckNclK4s5pn6RfS1k8wMC")
-
+# ✅ Load dataset from local repo (works on Streamlit Cloud)
+df = load_local_data()
 
 # Sidebar navigation
 st.sidebar.title("🧭 Etihad CO₂ Optimization Dashboard")
@@ -30,4 +38,3 @@ pages = {
 }
 selection = st.sidebar.radio("Navigate", list(pages.keys()))
 pages[selection].app(df)  # ✅ Pass df to selected page
-
