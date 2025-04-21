@@ -13,31 +13,29 @@ from pages import (
     aircraft_view
 )
 
-# ✅ Auto-refresh every 60 seconds
-st_autorefresh(interval=60000, limit=None, key="dashboardrefresh")
+# ✅ Auto-refresh every 60s for live mode
+REFRESH_INTERVAL = 60 * 1000  # in milliseconds
+st_autorefresh(interval=REFRESH_INTERVAL, key="datarefresh")
 
-# ✅ Try to load real-time data if available
-@st.cache_data
-def load_dashboard_data():
-    live_path = Path("data/live/final_dashboard_sample.csv")
-    fallback_path = Path("final_dashboard_sample.csv")
-
-    if live_path.exists():
-        df = pd.read_csv(live_path)
-        return df, "🟢 LIVE"
-    elif fallback_path.exists():
-        df = pd.read_csv(fallback_path)
-        return df, "⚪ OFFLINE"
-    else:
-        return pd.DataFrame(), "🔴 MISSING"
-
-# ✅ Load the data
-df, mode = load_dashboard_data()
-
-# ✅ Dashboard UI
+# ✅ Sidebar toggle: Live or Offline
 st.sidebar.title("🧭 Etihad CO₂ Optimization Dashboard")
-st.sidebar.markdown(f"**Data Mode:** {mode}")
+use_live = st.sidebar.toggle("🔌 Enable Real-Time Mode", value=True)
 
+@st.cache_data(ttl=30)
+def load_data():
+    try:
+        if use_live:
+            df = pd.read_csv("/content/drive/MyDrive/Etihad_CO2_Optimization/data/live/live_combined.csv")
+        else:
+            df = pd.read_csv(Path(__file__).parent / "final_dashboard_sample.csv")
+        return df
+    except Exception as e:
+        st.error(f"❌ Failed to load data: {e}")
+        return pd.DataFrame()
+
+df = load_data()
+
+# ✅ Navigation
 pages = {
     "🏠 Home": home,
     "🗺️ Route Overview": route_view,
@@ -47,6 +45,5 @@ pages = {
     "⛅ Weather Impact": weather_view,
     "✈️ Aircraft Efficiency": aircraft_view,
 }
-
 selection = st.sidebar.radio("Navigate", list(pages.keys()))
 pages[selection].app(df)
