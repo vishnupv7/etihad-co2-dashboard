@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 from pathlib import Path
@@ -22,10 +23,8 @@ def load_local_data():
         st.error(f"❌ Failed to load CSV: {e}")
         return pd.DataFrame()
 
-# ✅ Load dataset from local repo (works on Streamlit Cloud)
 df = load_local_data()
 
-# Sidebar navigation
 st.sidebar.title("🧭 Etihad CO₂ Optimization Dashboard")
 pages = {
     "🏠 Home": home,
@@ -37,4 +36,4 @@ pages = {
     "✈️ Aircraft Efficiency": aircraft_view,
 }
 selection = st.sidebar.radio("Navigate", list(pages.keys()))
-pages[selection].app(df)  # ✅ Pass df to selected page
+pages[selection].app(df)

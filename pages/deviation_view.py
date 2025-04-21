@@ -1,20 +1,15 @@
-from utils.loader import load_data_safely
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
 
 def app(df):
-
-    st.title("🔀 Deviation Insights")
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(ROOT_DIR, "../data/processed/etihad_with_deviation_tags.csv")
-    df = load_data_safely(file_path)
-    if df is None:
-        st.error('❌ Failed to load data.')
+    if df.empty or 'Deviation_km' not in df.columns:
+        st.error("❌ Deviation column missing.")
         return
 
+    st.title("🔀 Deviation Insights")
     st.metric("🧭 Deviated Flights", df[df['Deviation_km'] > 0].shape[0])
     dev_origin = df[df['Deviation_km'] > 0]['Origin'].value_counts().reset_index()
-    st.plotly_chart(px.bar(dev_origin, x='index', y='Origin', title='Top Deviation Origins'))
+    dev_origin.columns = ['Origin', 'count']
+    st.plotly_chart(px.bar(dev_origin, x='Origin', y='count', title='Top Origins with Deviations'))

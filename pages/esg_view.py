@@ -1,20 +1,16 @@
-from utils.loader import load_data_safely
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
 
 def app(df):
-
-    st.title("♻️ ESG View")
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(ROOT_DIR, "../data/processed/etihad_ml_anomaly_flags_esg_aligned.csv")
-    df = load_data_safely(file_path)
-    if df is None:
-        st.error('❌ Failed to load data.')
+    if df.empty or 'esg_match_percent' not in df.columns:
+        st.error('❌ Failed to load ESG data or column missing.')
         return
 
-    esg_levels = pd.cut(df['esg_match_percent'], [0, 80, 90, 100], labels=["Low", "Med", "High"])
+    st.title("🌱 ESG Alignment")
+    esg_levels = pd.cut(df['esg_match_percent'], [0, 80, 90, 100],
+                        labels=["<80%", "80–90%", "90–100%"])
     esg_summary = esg_levels.value_counts().reset_index()
-    st.plotly_chart(px.bar(esg_summary, x='index', y='count', title='ESG Band Overview'))
+    esg_summary.columns = ['ESG Score Band', 'count']
+    st.plotly_chart(px.bar(esg_summary, x='ESG Score Band', y='count', title='ESG Match Distribution'))
