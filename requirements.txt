@@ -1,5 +1,5 @@
 streamlit
 pandas
 plotly
-pyngrok
-streamlit_autorefresh
+requests
+streamlit-autorefresh
