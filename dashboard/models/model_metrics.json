@@ -1,0 +1,156 @@
+{
+  "fuel": {
+    "mae": 866.2136526482954,
+    "top_features": [
+      [
+        "Weather_Penalty_Index",
+        0.901038458525778
+      ],
+      [
+        "Altitude_Drift",
+        0.05387861182432972
+      ],
+      [
+        "Holding_Loop_Detected",
+        0.01862941877483529
+      ],
+      [
+        "Unplanned_Reroute",
+        0.012075495094848813
+      ],
+      [
+        "Estimated_Passengers",
+        0.004948304342827907
+      ],
+      [
+        "Aircraft_Code",
+        0.004606561059630801
+      ],
+      [
+        "Seat_Count",
+        0.004416843767275211
+      ],
+      [
+        "Engine_Code",
+        0.00040630661047419826
+      ]
+    ]
+  },
+  "co2": {
+    "mae": 2739.349447512522,
+    "top_features": [
+      [
+        "Weather_Penalty_Index",
+        0.9019203620077078
+      ],
+      [
+        "Altitude_Drift",
+        0.053534013947681196
+      ],
+      [
+        "Holding_Loop_Detected",
+        0.018414166066985267
+      ],
+      [
+        "Unplanned_Reroute",
+        0.011753442197418534
+      ],
+      [
+        "Estimated_Passengers",
+        0.004776967348506209
+      ],
+      [
+        "Aircraft_Code",
+        0.004606561059630826
+      ],
+      [
+        "Seat_Count",
+        0.004482054183177474
+      ],
+      [
+        "Engine_Code",
+        0.0005124331888928472
+      ]
+    ]
+  },
+  "anomaly": {
+    "precision_0": 0.999163179916318,
+    "recall_0": 1.0,
+    "f1_0": 0.9995814148179154,
+    "precision_1": 1.0,
+    "recall_1": 0.991304347826087,
+    "f1_1": 0.9956331877729258,
+    "accuracy": 0.9992360580595875,
+    "top_features": [
+      [
+        "Weather_Penalty_Index",
+        0.2275494837491743
+      ],
+      [
+        "CO2_per_RTK",
+        0.21752496726814877
+      ],
+      [
+        "Adjusted_CO2_kg",
+        0.19047755174799
+      ],
+      [
+        "Adjusted_Fuel_Burn_kg",
+        0.19034604751863113
+      ],
+      [
+        "RTK",
+        0.10949928246141594
+      ],
+      [
+        "Predicted_CO2_per_RTK",
+        0.03340513666069968
+      ],
+      [
+        "Altitude_Drift",
+        0.029692845293812237
+      ],
+      [
+        "Aircraft_Code",
+        0.0004714165428085377
+      ],
+      [
+        "Estimated_Passengers",
+        0.0004230499829936069
+      ],
+      [
+        "Engine_Code",
+        0.00034026716824648955
+      ],
+      [
+        "Seat_Count",
+        0.00026995160607930175
+      ]
+    ]
+  },
+  "revenue": {
+    "mae": 64585.713279387084,
+    "top_features": [
+      [
+        "Estimated_Passengers",
+        0.39
+      ],
+      [
+        "Aircraft_Code",
+        0.34
+      ],
+      [
+        "Seat_Count",
+        0.27
+      ],
+      [
+        "Engine_Code",
+        0.0
+      ],
+      [
+        "Yield_USD_per_RPK",
+        0.0
+      ]
+    ]
+  }
+}
