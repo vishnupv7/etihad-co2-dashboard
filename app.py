@@ -1,32 +1,46 @@
-
 import streamlit as st
-import pandas as pd
-from streamlit_autorefresh import st_autorefresh
-from pathlib import Path
+from utils.data_loader import load_data
+import traceback
 
-st.set_page_config(page_title="Etihad CO₂ Live Dashboard", layout="wide")
-st_autorefresh(interval=60000, key="datarefresh")
-
-FALLBACK_PATH = Path(__file__).parent / "final_dashboard_sample.csv"
-LIVE_PATH = Path(__file__).parent / "data" / "live" / "live_combined.csv"
-
-use_live = st.sidebar.toggle("🌐 Use Live Data", value=True)
-
+# Optional: For auto-refresh in live mode
+try:
+    from streamlit_autorefresh import st_autorefresh
+except ImportError:
+    pass  # Handle as needed
+st.sidebar.title("Data Source Mode")
+mode = st.sidebar.radio(
+    "Choose data source for dashboard:",
+    options=["Historical Data", "Live API"],
+    index=0
+)
+mode_val = 'historical' if mode == "Historical Data" else 'live'
 @st.cache_data
-def load_data(live=True):
+def get_dashboard_data(mode_val):
     try:
-        path = LIVE_PATH if live else FALLBACK_PATH
-        df = pd.read_csv(path)
+        # Use your main dashboard dataset filename here
+        if mode_val == 'historical':
+            df = load_data('final_dashboard_sample.csv', mode=mode_val)
+        else:
+            df = load_data('live_combined.csv', mode=mode_val)
         return df
-    except:
-        st.error("❌ Failed to load data.")
-        return pd.DataFrame()
+    except Exception as e:
+        st.warning(f"Failed to load {mode_val} data. Falling back to historical. \n{e}")
+        try:
+            df = load_data('final_dashboard_sample.csv', mode='historical')
+            return df
+        except Exception as e2:
+            st.error(f"Failed to load fallback data: {e2}")
+            return None
 
-df = load_data(use_live)
-st.success(f"📊 Loaded {'Live' if use_live else 'Fallback'} Data → {df.shape}")
-st.dataframe(df.head(10), use_container_width=True)
-
-if use_live and not df.empty:
-    import plotly.express as px
-    st.plotly_chart(px.scatter(df, x="temp", y="wind", color="callsign",
-        title="Live Weather Impact per Etihad Flight"), use_container_width=True)
+df = get_dashboard_data(mode_val)
+if df is not None:
+    st.success(f"Loaded {mode.upper()} data. Shape: {df.shape}")
+    # Continue with your dashboard visuals using df
+else:
+    st.error("No data available for display.")
+if mode_val == 'live':
+    try:
+        st_autorefresh(interval=60 * 1000, key="datarefresh")  # Refresh every 60s
+        st.info("⏱️ Live mode: dashboard auto-refreshes every 60s.")
+    except Exception:
+        st.warning("Auto-refresh not available (streamlit-autorefresh not installed).")
