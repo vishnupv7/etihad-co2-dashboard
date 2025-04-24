@@ -1,49 +1,26 @@
+# app.py
+
 import streamlit as st
-from utils.data_loader import load_data
-import traceback
+from utils.loader import unified_loader
+from utils.feature_engineering import engineer_live_features_etihad
+from utils.inference import run_inference_on_etihad_live
 
-try:
-    from streamlit_autorefresh import st_autorefresh
-except ImportError:
-    pass
+st.set_page_config(page_title="Etihad CO₂ Live Dashboard", layout="wide")
 
-st.sidebar.title("Data Source Mode")
-mode = st.sidebar.radio(
-    "Choose data source for dashboard:",
-    options=["Historical Data", "Live API"],
-    index=0
-)
-mode_val = 'historical' if mode == "Historical Data" else 'live'
+st.title("✈️ Etihad CO₂ Live Dashboard")
+mode = st.sidebar.radio("Data Mode", ["Live", "Historic"])
 
-if mode_val == 'live':
-    try:
-        st_autorefresh(interval=60 * 1000, key="datarefresh")
-        st.info("⏱️ Live mode: dashboard auto-refreshes every 60s.")
-    except Exception:
-        st.warning("Auto-refresh not available (streamlit-autorefresh not installed).")
+# 1. Load data
+df = unified_loader(mode='live' if mode == "Live" else 'historic')
 
-@st.cache_data
-def get_dashboard_data(mode_val):
-    try:
-        if mode_val == 'historical':
-            df = load_data('final_dashboard_sample.csv', mode=mode_val)
-        else:
-            df = load_data('live_combined.csv', mode=mode_val)
-        return df
-    except Exception as e:
-        st.warning(f"Failed to load {mode_val} data. Falling back to historical.\n{e}")
-        try:
-            df = load_data('final_dashboard_sample.csv', mode='historical')
-            return df
-        except Exception as e2:
-            st.error(f"Failed to load fallback data: {e2}")
-            return None
-
-df = get_dashboard_data(mode_val)
-if df is not None:
-    st.success(f"Loaded {mode.upper()} data. Shape: {df.shape}")
-    # Example: call a module
-    import pages.route_view as route_view
-    route_view.app(mode_val)
+# 2. For live mode, engineer features, run ML inference, show predictions
+if mode == "Live":
+    df_etihad = engineer_live_features_etihad(df, planes_path='data/reference/planes.dat')
+    preds = run_inference_on_etihad_live(df_etihad, model_dir='dashboard/models')
+    st.write("## Live Etihad Predictions")
+    st.dataframe(preds[['callsign', 'predicted_fuel', 'predicted_co2', 'anomaly_flag_pred', 'predicted_revenue']])
 else:
-    st.error("No data available for display.")
+    st.write("## Historic Data Preview")
+    st.dataframe(df.head(10))
+
+# (Add visuals, summary KPIs, charts, etc. here as needed!)
