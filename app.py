@@ -1,26 +1,68 @@
-# app.py
-
 import streamlit as st
-from utils.loader import unified_loader
-from utils.feature_engineering import engineer_live_features_etihad
-from utils.inference import run_inference_on_etihad_live
+from datetime import datetime
 
-st.set_page_config(page_title="Etihad CO₂ Live Dashboard", layout="wide")
+# ---- PAGE CONFIG ----
+st.set_page_config(
+    page_title="Etihad CO₂ Optimization Dashboard",
+    page_icon="✈️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-st.title("✈️ Etihad CO₂ Live Dashboard")
-mode = st.sidebar.radio("Data Mode", ["Live", "Historic"])
+# ---- SIDEBAR ----
+st.sidebar.image(
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Etihad_Airways_Logo.svg/512px-Etihad_Airways_Logo.svg.png",
+    width=160
+)
+st.sidebar.title("Etihad CO₂ Dashboard")
+st.sidebar.markdown(
+    """
+    **Data Modes:**  
+    - [ ] Live: Uses real-time API data (OpenSky, OpenWeather)
+    - [ ] Historic: Uses merged dataset (benchmarking/model training)
+    """
+)
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Built by:** [Vishnu Pv](https://www.linkedin.com/in/vishnu-p-v-)")
+st.sidebar.markdown("[GitHub Repo](https://github.com/vishnupv7/etihad-co2-dashboard)")
 
-# 1. Load data
-df = unified_loader(mode='live' if mode == "Live" else 'historic')
+# ---- LANDING HEADER ----
+st.title("✈️ Etihad CO₂ & Fuel Efficiency Dashboard")
+st.caption("A real-time, ML-powered, ESG-ready analytics solution for Etihad Airways.")
 
-# 2. For live mode, engineer features, run ML inference, show predictions
-if mode == "Live":
-    df_etihad = engineer_live_features_etihad(df, planes_path='data/reference/planes.dat')
-    preds = run_inference_on_etihad_live(df_etihad, model_dir='dashboard/models')
-    st.write("## Live Etihad Predictions")
-    st.dataframe(preds[['callsign', 'predicted_fuel', 'predicted_co2', 'anomaly_flag_pred', 'predicted_revenue']])
-else:
-    st.write("## Historic Data Preview")
-    st.dataframe(df.head(10))
+st.markdown(
+    """
+    ### Welcome!
+    This dashboard integrates **Etihad Airways' flight, fuel, emissions, and weather data** with real-time and historic APIs.
 
-# (Add visuals, summary KPIs, charts, etc. here as needed!)
+    **What you can do:**
+    - Analyze route/network CO₂ and fuel performance
+    - Detect operational anomalies, inefficiencies, and reroutes
+    - Benchmark against ESG/CO₂ targets (ICAO, Etihad annuals)
+    - Visualize impact of weather, aircraft, and route choices
+    - Track live KPIs and get actionable recommendations
+
+    #### 👉 Use the sidebar to navigate:  
+    - **Home** (this page): Executive summary, live update status
+    - **Route View**: Map, route KPIs, top anomalies
+    - **Aircraft View**: Fleet/engine performance
+    - **Weather View**: Weather penalties & effects
+    - **ML View**: Model predictions, feature importance
+    - **Deviation View**: Holding/reroute impacts
+    - **ESG View**: Compliance, trends, best/worst routes
+    """
+)
+
+st.info("**Tip:** Data auto-refreshes in live mode. Use Historic mode for deeper model insights and validation.")
+
+# ---- ABOUT/FOOTER ----
+st.markdown("---")
+st.markdown(
+    f"""
+    **About this project:**  
+    Developed as part of a Data Science MBA project for Etihad Airways, this dashboard demonstrates the power of unified analytics, real-time prediction, and ESG benchmarking for modern airline operations.
+    
+    **Project version:** {datetime.now().strftime('%Y-%m-%d')}
+    """
+)
+st.caption("© 2025 Vishnu Pv. For educational and demonstration purposes only.")
