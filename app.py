@@ -15,13 +15,12 @@ st.sidebar.image(
     width=160
 )
 st.sidebar.title("Etihad CO₂ Dashboard")
-st.sidebar.markdown(
-    """
-    **Data Modes:**  
-    - [ ] Live: Uses real-time API data (OpenSky, OpenWeather)
-    - [ ] Historic: Uses merged dataset (benchmarking/model training)
-    """
-)
+
+# ✅ REAL global toggle using Session State!
+if "mode" not in st.session_state:
+    st.session_state["mode"] = "Historic"
+st.session_state["mode"] = st.sidebar.radio("Data Mode", ["Historic", "Live"], index=0)
+
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Built by:** [Vishnu Pv](https://www.linkedin.com/in/vishnu-p-v-)")
 st.sidebar.markdown("[GitHub Repo](https://github.com/vishnupv7/etihad-co2-dashboard)")
