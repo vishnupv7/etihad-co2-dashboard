@@ -1,4 +1,0 @@
-Origin,Destination,FlightDate,Fuel_Burn_kg,CO2_kg,Weather_Penalty_Index,Deviation_km_y,esg_match_percent,Anomaly_Score,SHAP_Top_Feature
-OMAA,EGLL,2025-04-21,12500,39375,2.1,12,93.2,0.22,Wind
-OMAA,KJFK,2025-04-21,9800,30870,1.5,0,91.8,0.1,Route
-OMAA,SYD,2025-04-21,15300,48195,3.0,25,96.7,0.78,Weight
