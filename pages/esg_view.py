@@ -6,7 +6,8 @@ def app():
     df = unified_loader(st.session_state["mode"].lower())
 
     st.title("🌱 ESG Compliance & Benchmarking")
-    st.metric("ESG Match %", f"{df['esg_match_percent'].mean():.2f}%")
+    if 'esg_match_percent' in df.columns:
+        st.metric("ESG Match %", f"{df['esg_match_percent'].mean():.2f}%")
 
     if 'FlightDate' in df.columns and 'CO2_kg' in df.columns:
         import pandas as pd
@@ -21,5 +22,3 @@ def app():
 
     st.markdown("#### Recommendation")
     st.write("• Prioritize efficiency improvements on routes with low ESG compliance.")
-
-app()
