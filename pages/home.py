@@ -22,14 +22,14 @@ def app():
         st.info("No live predictions available.")
 
     st.subheader("Route Efficiency Score Distribution")
-    st.bar_chart(df['route_efficiency_score'].value_counts().sort_index())
+    if 'route_efficiency_score' in df.columns:
+        st.bar_chart(df['route_efficiency_score'].value_counts().sort_index())
 
     st.subheader("ESG Compliance Score")
-    st.metric("ESG Match %", f"{df['esg_match_percent'].mean():.2f}%")
+    if 'esg_match_percent' in df.columns:
+        st.metric("ESG Match %", f"{df['esg_match_percent'].mean():.2f}%")
     st.caption(f"Last updated: [get timestamp from live/last_updated.txt]")
 
     st.markdown("#### Recommendations")
     st.write("• Prioritize improving efficiency on flagged routes with low efficiency scores or recurring anomalies.")
     st.write("• Target weather-related penalties by optimizing flight planning and altitudes.")
-
-app()
