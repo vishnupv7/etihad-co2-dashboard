@@ -7,7 +7,8 @@ def app():
     st.title("🤖 ML Anomaly & Prediction Insights")
 
     st.write("### Anomaly Flagged Flights")
-    st.dataframe(df[df.get('anomaly_flag',0)==1][['Origin','Destination','Aircraft_Code','Fuel_Burn_kg','CO2_kg','route_efficiency_score']].head())
+    if 'anomaly_flag' in df.columns:
+        st.dataframe(df[df.get('anomaly_flag',0)==1][['Origin','Destination','Aircraft_Code','Fuel_Burn_kg','CO2_kg','route_efficiency_score']].head())
 
     st.write("### Feature Importances (Fuel Prediction)")
     import pandas as pd
@@ -23,5 +24,3 @@ def app():
 
     st.markdown("#### Alerts & Recommendations")
     st.write("• Investigate any flight flagged as anomaly for possible operational inefficiency.")
-
-app()
