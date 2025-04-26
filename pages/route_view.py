@@ -5,22 +5,20 @@ import plotly.express as px
 def app():
     df = unified_loader(st.session_state["mode"].lower())
 
-    st.title("🌍 Route Network & Emissions")
-    if {'Origin', 'Destination'}.issubset(df.columns):
-        st.metric("Routes Tracked", df.groupby(['Origin','Destination']).ngroups)
-        top_routes = df.groupby(['Origin','Destination']).agg({'Fuel_Burn_kg':'mean', 'CO2_kg':'mean', 'route_efficiency_score':'mean'}).reset_index()
-        st.write("### Top 10 Routes by Avg Fuel Burn")
-        st.dataframe(top_routes.sort_values('Fuel_Burn_kg',ascending=False).head(10))
-
-    st.write("### Route Efficiency Boxplot")
-    if 'route_efficiency_score' in df.columns:
-        st.box_chart(df['route_efficiency_score'])
-
-    st.write("### Route Map (Top 20)")
-    if {'Origin', 'Destination', 'latitude', 'longitude'}.issubset(df.columns):
-        top = df.head(20)
-        fig = px.scatter_geo(top, lat='latitude', lon='longitude', color='Fuel_Burn_kg',
-                             hover_name='callsign', title="Top Route Segments (approx)")
+    st.title("⛅ Weather & Fuel Penalty Analysis")
+    st.write("### Fuel Burn vs. Weather Penalty")
+    if 'Weather_Penalty_Index' in df.columns and 'Fuel_Burn_kg' in df.columns:
+        fig = px.scatter(df, x='Weather_Penalty_Index', y='Fuel_Burn_kg', color='CO2_kg',
+                         title="Fuel Burn vs Weather Penalty Index")
         st.plotly_chart(fig)
-    else:
-        st.info("Geographic route map will appear when location columns are present.")
+
+    st.write("### Weather Penalty Histogram")
+    if 'Weather_Penalty_Index' in df.columns:
+        st.histogram(df['Weather_Penalty_Index'], bins=20)
+
+    st.write("### Correlation Matrix")
+    cols = ['Fuel_Burn_kg','CO2_kg','Weather_Penalty_Index','temp','wind','pressure']
+    st.dataframe(df[[col for col in cols if col in df.columns]].corr())
+
+    st.markdown("#### Insights")
+    st.write("• Significant wind/temperature penalties can be seen during high CO₂ flights.")
