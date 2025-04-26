@@ -13,5 +13,3 @@ def app():
         st.write("• Flights with major deviations should be prioritized for review.")
     else:
         st.info("Deviation data not found in current dataset.")
-
-app()
