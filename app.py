@@ -16,10 +16,15 @@ st.sidebar.image(
 )
 st.sidebar.title("Etihad CO₂ Dashboard")
 
-# ✅ REAL global toggle using Session State!
+# ---- GLOBAL DATA MODE TOGGLE (Session State) ----
 if "mode" not in st.session_state:
     st.session_state["mode"] = "Historic"
-st.session_state["mode"] = st.sidebar.radio("Data Mode", ["Historic", "Live"], index=0)
+st.session_state["mode"] = st.sidebar.radio(
+    "Data Mode",
+    ["Historic", "Live"],
+    index=0 if st.session_state["mode"] == "Historic" else 1,
+    key="data_mode_toggle"
+)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Built by:** [Vishnu Pv](https://www.linkedin.com/in/vishnu-p-v-)")
